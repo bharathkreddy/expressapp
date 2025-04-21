@@ -9,12 +9,6 @@ const port = 3000;
 app.use(morgan("dev"));
 app.use(express.json());
 
-// custom middleware : will create a log on every request - check to end of the file to see where this middleware is used //
-const myLogger = function (req, res, next) {
-  console.log(`BRK logger: ${new Date().toISOString()}:`);
-  next();
-};
-
 // INITIAL DATA LOADS
 // convert string object to json before using. readfile allways gives back a string //
 const tours = JSON.parse(
@@ -89,6 +83,31 @@ const modifyTour = (req, res) => {
   );
 };
 
+// change the logic later.
+const deleteTour = (req, res) => {
+  const [id, tourUpdate] = [Number(req.params.id), req.body];
+  const fetchTour = tours.find((tour) => tour.id === id);
+
+  if (!fetchTour)
+    return res.status(404).json({ status: "Failed", message: "Invalid ID." });
+
+  const newTour = tours.filter((tour) => tour.id !== id);
+
+  newTour.push(Object.assign(fetchTour, tourUpdate));
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(newTour),
+    (err) => {
+      if (err) res.status(500).send("We screwed up something ☹️");
+      res.status(200).json({
+        status: "success",
+        message: `tour ${id} patched`,
+      });
+    }
+  );
+};
+
 const getAllUsers = (req, res) => {
   res.status(500).json({
     status: "Error",
@@ -122,15 +141,17 @@ const deleteUser = (req, res) => {
 
 // ROUTES
 
-app.route("/api/v1/tours").get(getAllTours).post(addTour);
-app.route("/api/v1/users").get(getAllUsers).post(addUser);
-app.use(myLogger); //middlewares are acted on in same order as they are defined in the script  below middleware doesnt act on above route but only on below one.
-app.route("/api/v1/tours/:id").get(getTourbyID).patch(modifyTour);
-app
-  .route("/api/v1/users/:id")
-  .get(getUserbyID)
-  .patch(modifyUser)
-  .delete(deleteUser);
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter.route("/").get(getAllTours).post(addTour);
+tourRouter.route("/:id").get(getTourbyID).patch(modifyTour).delete(deleteTour);
+
+userRouter.route("/").get(getAllUsers).post(addUser);
+userRouter.route("/:id").get(getUserbyID).patch(modifyUser).delete(deleteUser);
+
+app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
 
 // SERVER START
 

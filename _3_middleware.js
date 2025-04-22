@@ -124,7 +124,9 @@ const deleteUser = (req, res) => {
 
 app.route("/api/v1/tours").get(getAllTours).post(addTour);
 app.route("/api/v1/users").get(getAllUsers).post(addUser);
+
 app.use(myLogger); //middlewares are acted on in same order as they are defined in the script  below middleware doesnt act on above route but only on below one.
+
 app.route("/api/v1/tours/:id").get(getTourbyID).patch(modifyTour);
 app
   .route("/api/v1/users/:id")

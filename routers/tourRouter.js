@@ -4,6 +4,10 @@ const fs = require("fs");
 const express = require("express");
 const router = express.Router();
 
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, "utf-8")
+);
+
 // add middleware to run on a particular param - in this case on id param, this id is passed as val in the callback.
 router.param("id", (req, res, next, val) => {
   console.log(`param :: ${val} :: used and middleware invoked`); //not here val not id
@@ -27,10 +31,6 @@ router.param("id", (req, res, next, val) => {
   next(); // to move ahead with next middleware
 });
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, "utf-8")
-);
-
 const getAllTours = (req, res) => {
   res.status(200).json({
     status: "Success",
@@ -46,7 +46,7 @@ const getTour = (req, res) => {
   //       .status(404)
   //       .json({ status: "Failed", message: "ID does not exist." });
 
-  //   const tour = tours.find((tour) => tour.id === Number(id));
+  const tour = tours.find((tour) => tour.id === Number(id));
   //   if (!tour)
   //     return res
   //       .status(404)

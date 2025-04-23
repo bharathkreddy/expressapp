@@ -12,9 +12,6 @@ router.param("id", (req, res, next, val) => {
   next(); // use next for the other .get middleware to be invoked next, if not used the traffic would stop.
 });
 
-// a nice usecase for this is to do all checks at one place example check if ID exists and returning failure can be done at one place instead of all the functions.
-router.param("id", tourcontroller.checkId);
-
 router
   .route("/")
   .get(tourcontroller.getAllTours)

@@ -20,6 +20,16 @@ exports.checkId = (req, res, next, val) => {
   next(); // to move ahead with next middleware
 };
 
+exports.checkPostBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: "fail",
+      message: "📦 Request body Missing name or price",
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: "Success",

@@ -6,10 +6,6 @@ const express = require("express");
 const router = express.Router();
 const tourcontroller = require("./../controller/tourController");
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, "utf-8")
-);
-
 // add middleware to run on a particular param - in this case on id param, this id is passed as val in the callback.
 router.param("id", (req, res, next, val) => {
   console.log(`param :: ${val} :: used and middleware invoked`); //not here val not id
@@ -20,10 +16,14 @@ router.param("id", (req, res, next, val) => {
 router.param("id", tourcontroller.checkId);
 
 router
-  .get("/", tourcontroller.getAllTours)
-  .get("/:id", tourcontroller.getTour)
-  .post("/", tourcontroller.createTour)
-  .patch("/:id", tourcontroller.updateTour)
-  .delete("/:id", tourcontroller.deleteTour);
+  .route("/")
+  .get(tourcontroller.getAllTours)
+  .post(tourcontroller.checkPostBody, tourcontroller.createTour); // configure a middleware to be run only on a particular type of request.
+
+router
+  .route("/:id")
+  .get(tourcontroller.getTour)
+  .patch(tourcontroller.updateTour)
+  .delete(tourcontroller.deleteTour);
 
 module.exports = router;

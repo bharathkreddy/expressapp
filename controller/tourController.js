@@ -4,7 +4,7 @@ const Tour = require("./../model/tourModel");
 exports.getAllTours = async (req, res) => {
   try {
     // Building a query
-    const excludedFields = ["page", "sort", "limit", "flelds"];
+    const excludedFields = ["page", "sort", "limit", "fields"];
     const queryObj = { ...req.query }; //we need to make a copy and not modify the original request.
     excludedFields.forEach((SpecialWord) => delete queryObj[SpecialWord]);
 
@@ -14,13 +14,23 @@ exports.getAllTours = async (req, res) => {
     const mongoQuery = JSON.parse(queryStr);
     let query = Tour.find(mongoQuery);
 
+    // Sorting
     if (req.query.sort) {
-      // Sorting
       const sortBy = req.query.sort.split(",").join(" ");
       query = query.sort(sortBy);
     }
+
+    // Projecting
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v"); //excluding the __v which mongo creates for its internal use.
+    }
+
     // Executing the query
     const tours = await query; // this now returns the result from .find which returns a query object.
+
     res.status(200).json({
       status: "Success",
       length: tours.length,

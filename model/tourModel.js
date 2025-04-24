@@ -83,7 +83,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-    select: false,
+    select: false, //this flag permanently removes this from projection but data is still available on collections.
   },
   startDates: [Date],
   secretTour: {

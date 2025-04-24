@@ -6,7 +6,7 @@ const tourRouter = require("./routers/tourRouter");
 //app init
 const app = express();
 
-//middleware
+//middleware common to entire app
 app.use(morgan("combined"));
 
 //routes

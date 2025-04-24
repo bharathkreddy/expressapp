@@ -2,19 +2,25 @@ const Tour = require("./../model/tourModel");
 
 //controllers
 exports.getAllTours = async (req, res) => {
-  const specialQueryWords = ["page", "sort", "limit", "flelds"];
-  const queryRemoveSpecialWords = { ...req.query }; //we need to make a copy and not modify the original request.
-  specialQueryWords.forEach(
-    (SpecialWord) => delete queryRemoveSpecialWords[SpecialWord]
-  );
-
-  let queryStr = JSON.stringify(queryRemoveSpecialWords);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-  const mongoQuery = JSON.parse(queryStr);
-
   try {
-    const tours = await Tour.find(mongoQuery);
+    // Building a query
+    const excludedFields = ["page", "sort", "limit", "flelds"];
+    const queryObj = { ...req.query }; //we need to make a copy and not modify the original request.
+    excludedFields.forEach((SpecialWord) => delete queryObj[SpecialWord]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    const mongoQuery = JSON.parse(queryStr);
+    let query = Tour.find(mongoQuery);
+
+    if (req.query.sort) {
+      // Sorting
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    }
+    // Executing the query
+    const tours = await query; // this now returns the result from .find which returns a query object.
     res.status(200).json({
       status: "Success",
       length: tours.length,

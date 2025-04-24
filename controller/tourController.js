@@ -7,11 +7,14 @@ exports.getAllTours = async (req, res) => {
   specialQueryWords.forEach(
     (SpecialWord) => delete queryRemoveSpecialWords[SpecialWord]
   );
-  // console.log(req.query);
-  // console.log(queryRemoveSpecialWords);
+
+  let queryStr = JSON.stringify(queryRemoveSpecialWords);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  const mongoQuery = JSON.parse(queryStr);
 
   try {
-    const tours = await Tour.find(queryRemoveSpecialWords);
+    const tours = await Tour.find(mongoQuery);
     res.status(200).json({
       status: "Success",
       length: tours.length,

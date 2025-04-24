@@ -6,7 +6,7 @@ const router = express.Router();
 const tourController = require("./../controller/tourController");
 
 //middleware
-router.use(express.json());
+router.use(express.json()); //Parses JSON body in req.body (from the request payload)
 
 // middleware that is specific to this router
 const requestLog = (req, res, next) => {

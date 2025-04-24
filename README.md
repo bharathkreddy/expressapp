@@ -19,4 +19,8 @@
    3. Model setup.
       a. Split out all mongoose code i.e. schema and model and Tour model intantiation to tourModel.js
       b. import Tour object to be used by controller.
+      c. Added a small helper script to run independently to import data from json and to delete all data from mongo. Here is how to use it.
+      `node ./dev-data/data/import-data.js --delete`
+      `node ./dev-data/data/import-data.js --import`
+      The code parses the process.argv[2], the 0 arg is node , 1st is ./dev-data/data/import-data.js, we capture second after this to execute relavent function.
    4. server and app seperated.

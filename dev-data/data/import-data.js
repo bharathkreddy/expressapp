@@ -1,6 +1,6 @@
 const dotenv = require("dotenv").config(); // env is loaded from where node is run so if i run node ./dev-data/data/import-data.json, .env is found without config.
 const mongoose = require("mongoose");
-const Tour = require("./../../models/tourModel");
+const Tour = require("./../../model/tourModel");
 
 const fs = require("fs");
 
@@ -22,9 +22,23 @@ const tours = JSON.parse(
 async function transferData() {
   try {
     await Tour.insertMany(tours);
+    console.log("🎉 all data inserted.");
   } catch (err) {
     console.log(err.message);
   }
 }
 
-transferData();
+async function deleteData() {
+  try {
+    await Tour.deleteMany();
+    console.log("🧨 all data deleted.");
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
+if (process.argv[2] === "--import") {
+  transferData();
+} else if (process.argv[2] === "--delete") {
+  deleteData();
+}

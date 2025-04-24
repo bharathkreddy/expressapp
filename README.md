@@ -38,4 +38,5 @@
       b. Then check if req.query has sort field and if yes chain the query with sort method with sort parameter, before calling the entire chain.
       c. For descending order use `/api/v1/tours?difficulty=easy&duration[gte]=5&sort=-price`. Notice the `-` in front of sort field.
       d. Sorting ties use this `api/v1/tours?sort=duration,-price` so we need to replace `,` by a `space`.
-   5. Projections - limitiing fields to expose. we use this `/api/v1/tours?sort=duration,-price&fields=name,difficulty,price,summary` and replace `,` the same way as above.
+   5. **ed50193** Projections - limitiing fields to expose. we use this `/api/v1/tours?sort=duration,-price&fields=name,difficulty,price,summary` and replace `,` the same way as above.
+   6. Pagination - we use `/api/v1/tours?page=2&limit=4` show me page 2 and limit each page to 4 results.

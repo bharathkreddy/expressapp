@@ -28,6 +28,18 @@ exports.getAllTours = async (req, res) => {
       query = query.select("-__v"); //excluding the __v which mongo creates for its internal use.
     }
 
+    // Pagination
+    const page = req.query.page * 1 || 1; //if no user page then default of 1 page - allways good to limit resuts and prevent an explosion.
+    const limit = req.query.limit * 1 || 100; //multiply by 1 to convert strings to a number.
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+
+    // only when a page is provided , check if no of skipped records is > total records and throw an erorr.
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error("🤥 This page does not exist!");
+    }
+
     // Executing the query
     const tours = await query; // this now returns the result from .find which returns a query object.
 

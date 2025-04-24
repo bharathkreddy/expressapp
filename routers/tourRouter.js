@@ -5,6 +5,9 @@ const router = express.Router();
 
 const tourController = require("./../controller/tourController");
 
+//middleware
+router.use(express.json());
+
 // middleware that is specific to this router
 const requestLog = (req, res, next) => {
   console.log("🔸 Request Method:", req.method);
@@ -15,10 +18,11 @@ const requestLog = (req, res, next) => {
   if (req.body) {
     console.log("📦 Request Body:", req.body);
   }
+  if (req.query) {
+    console.log("❓ Request Query:", req.query);
+  }
   next();
 };
-
-router.use(express.json());
 
 // req.params only exists after a matching route pattern with parameters (e.g., /:id) is found. hence we cant use below.
 // Middleware registered with router.use(...) doesn't have access to req.params if it runs before the route match.

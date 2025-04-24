@@ -2,8 +2,16 @@ const Tour = require("./../model/tourModel");
 
 //controllers
 exports.getAllTours = async (req, res) => {
+  const specialQueryWords = ["page", "sort", "limit", "flelds"];
+  const queryRemoveSpecialWords = { ...req.query }; //we need to make a copy and not modify the original request.
+  specialQueryWords.forEach(
+    (SpecialWord) => delete queryRemoveSpecialWords[SpecialWord]
+  );
+  // console.log(req.query);
+  // console.log(queryRemoveSpecialWords);
+
   try {
-    const tours = await Tour.find();
+    const tours = await Tour.find(queryRemoveSpecialWords);
     res.status(200).json({
       status: "Success",
       length: tours.length,

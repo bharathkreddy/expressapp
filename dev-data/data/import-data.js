@@ -23,6 +23,7 @@ async function transferData() {
   try {
     await Tour.insertMany(tours);
     console.log("🎉 all data inserted.");
+    process.exit();
   } catch (err) {
     console.log(err.message);
   }
@@ -32,6 +33,7 @@ async function deleteData() {
   try {
     await Tour.deleteMany();
     console.log("🧨 all data deleted.");
+    process.exit();
   } catch (err) {
     console.log(err.message);
   }

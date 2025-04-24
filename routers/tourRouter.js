@@ -37,6 +37,10 @@ router
   .post(requestLog, tourController.addTour);
 
 router
+  .route("/top-5-cheap")
+  .get(tourController.aliasTopCheap, tourController.getAllTours);
+
+router
   .route("/:id")
   .get(requestLog, tourController.getTour)
   .patch(requestLog, tourController.modifyTour)

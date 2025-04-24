@@ -39,4 +39,7 @@
       c. For descending order use `/api/v1/tours?difficulty=easy&duration[gte]=5&sort=-price`. Notice the `-` in front of sort field.
       d. Sorting ties use this `api/v1/tours?sort=duration,-price` so we need to replace `,` by a `space`.
    5. **ed50193** Projections - limitiing fields to expose. we use this `/api/v1/tours?sort=duration,-price&fields=name,difficulty,price,summary` and replace `,` the same way as above.
-   6. Pagination - we use `/api/v1/tours?page=2&limit=4` show me page 2 and limit each page to 4 results.
+   6. **7fa58dd** Pagination - we use `/api/v1/tours?page=2&limit=4` show me page 2 and limit each page to 4 results.
+   7. Aliasing. Lets say we want to expose a simple easy to remember endpoint for top 5 cheapest tours ranked by rating. for this
+      1. First add a route to tourRouter.js
+      2. Create a middleware to Prefill all the query fields and use this middleware in the router to hit the controller getAllTours.

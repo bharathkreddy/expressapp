@@ -1,5 +1,16 @@
 const Tour = require("./../model/tourModel");
 
+//middleware
+//this middleware prefills the query with certain objects.
+exports.aliasTopCheap = (req, res, next) => {
+  req.query.skip = "0";
+  req.query.limit = "5";
+  req.query.sort = "-ratingsAverage,price";
+  req.query.fields = "ratingsAverage,price,name,difficulty,summary";
+  console.log("🔧 aliasTopCheap middleware called:", req.query);
+  next();
+};
+
 //controllers
 exports.getAllTours = async (req, res) => {
   try {

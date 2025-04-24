@@ -1,16 +1,5 @@
 const Tour = require("./../model/tourModel");
 
-//middleware
-//this middleware prefills the query with certain objects.
-exports.aliasTopCheap = (req, res, next) => {
-  req.query.skip = "0";
-  req.query.limit = "5";
-  req.query.sort = "-ratingsAverage,price";
-  req.query.fields = "ratingsAverage,price,name,difficulty,summary";
-  console.log("🔧 aliasTopCheap middleware called:", req.query);
-  next();
-};
-
 //controllers
 exports.getAllTours = async (req, res) => {
   try {
@@ -114,4 +103,46 @@ exports.getTour = async (req, res) => {
   } catch (err) {
     res.status(404).send(`💥 Error: ${err.message}`);
   }
+};
+
+exports.getStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      // Stage 1: Filter tours by difficulty
+      {
+        $match: { ratingsAverage: { $gte: 4 } },
+      },
+      // Stage 2: Group remaining documents  and calculate total quantity
+      {
+        $group: {
+          _id: "$difficulty",
+          numTours: { $sum: 1 }, //adds 1 for each document
+          avgPrice: { $avg: "$price" },
+          averageRating: { $avg: "$ratingsAverage" },
+          totalRatings: { $sum: "$ratingsQuantity" },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 },
+      },
+    ]);
+    res.status(200).json({
+      status: "Success",
+      data: stats,
+    });
+  } catch (err) {
+    res.status(404).send(`💥 Error: ${err.message}`);
+  }
+};
+
+//this middleware prefills the query with certain objects.
+exports.aliasTopCheap = (req, res, next) => {
+  req.query = {
+    skip: "0",
+    limit: "5",
+    sort: "-ratingsAverage,price",
+    fields: "ratingsAverage,price,name,difficulty,summary",
+  };
+  console.log("🔧 aliasTopCheap middleware called:", req.query);
+  next();
 };

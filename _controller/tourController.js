@@ -2,21 +2,8 @@ const fs = require("fs");
 
 const Tour = require("./../models/tourModel");
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, "utf-8")
-);
-
-exports.checkPostBody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
-      status: "fail",
-      message: "📦 Request body Missing name or price",
-    });
-  }
-  next();
-};
-
 exports.getAllTours = async (req, res) => {
+  console.log(req.body);
   try {
     const tours = await Tour.find();
     res.status(200).json({

@@ -15,7 +15,7 @@ router.param("id", (req, res, next, val) => {
 router
   .route("/")
   .get(tourcontroller.getAllTours)
-  .post(tourcontroller.checkPostBody, tourcontroller.createTour); // configure a middleware to be run only on a particular type of request.
+  .post(tourcontroller.createTour); // configure a middleware to be run only on a particular type of request.
 
 router
   .route("/:id")

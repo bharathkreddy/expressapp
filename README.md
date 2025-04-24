@@ -2,9 +2,9 @@
 
 ![Architecture](./img/architeture.png)
 
-# 🧪 CHANGE LOG
+# 🧪 CHANGE LOG from e23133e onwards
 
-1. Commit: Mongoose
-   1. Mongoose Model added
-   2. tour controller changed to remove all fs reads and now controller interacts with model.
-   3. Deleted - Id & body checks no longer, Mongoose natively implements it. This means router.param is also removed from tourRouter.
+1. Commit: Basic Express app with routes setup
+   1. Mongoose Model added.
+   2. Routes Setup.
+   3. Morgan middleware setup.

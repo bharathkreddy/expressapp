@@ -62,6 +62,16 @@
       1. `This` keyword in all query middleware points the current `Aggregation object`.
       2. `this.pipeline()` moethod returns the aggregation pipeline.
       3. If want to remove all secret tours from aggregation - just push one more `match stage` to beginnning of the `this.pipeline()`
-6. Validators.
+6. **9842d31** Validators
    1. move as much as possible to model (all business logic) and keep controller layers thin.
    2. used `validator` library to add custom validations in model.
+7. Error Handling:
+   1. Using `ndb` for debugging.
+      1. install `npm i ndb --global` , ndb package globally.
+      2. add a `"debug": "ndb server.js"` in scripts section in `package.json`.
+      3. run `npm run debug`.
+   2. Adding a middleware to catch any unhandled route.
+      1. Currently if we hit an unhandled route, express returns an html  
+         ![WrongRoute](img/wrongRoute.png)
+      2. Adding a middleware at the end of app.js. This middleware is reached only if none of above middlewares are hit. There is at least 1 middleware where responce is sent back terminating the req-res cycle. So if this middleware his hit that means - it must have been a route which is not handled.
+   3. Global Error handling.

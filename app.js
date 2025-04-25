@@ -18,5 +18,12 @@ app.use(morgan("combined"));
 // ✅ attach routes
 app.use("/api/v1/tours", tourRouter);
 
+// ✅ Unhandled Route middleware. (Readme section 7)
+app.all("/{*any}", (req, res, next) => {
+  res.status(404).json({
+    status: "failed",
+    message: `💥 Error: Route does not exist - ${req.originalUrl}`,
+  });
+});
 // ✅ export the app
 module.exports = app;

@@ -62,4 +62,6 @@
       1. `This` keyword in all query middleware points the current `Aggregation object`.
       2. `this.pipeline()` moethod returns the aggregation pipeline.
       3. If want to remove all secret tours from aggregation - just push one more `match stage` to beginnning of the `this.pipeline()`
-6.
+6. Validators.
+   1. move as much as possible to model (all business logic) and keep controller layers thin.
+   2. used `validator` library to add custom validations in model.

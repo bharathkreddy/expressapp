@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const validator = require("validator"); //for custom validation on tourname
 
 // mongoose connection
 mongoose.connect(process.env.MONGOURL, {
@@ -24,7 +25,7 @@ const tourSchema = new mongoose.Schema({
     trim: true,
     maxlength: [40, "A tour name must have less or equal then 40 characters"],
     minlength: [10, "A tour name must have more or equal then 10 characters"],
-    // validate: [validator.isAlpha, 'Tour name must only contain characters']
+    validate: [validator.isAlpha, "Tour name must only contain characters"], //custom validator using validator library.
   },
   slug: String,
   duration: {
@@ -60,6 +61,7 @@ const tourSchema = new mongoose.Schema({
   priceDiscount: {
     type: Number,
     validate: {
+      //custom validator is a simple function (not arrow as we use this.price) which returns true or false.
       validator: function (val) {
         // this only points to current doc on NEW document creation
         return val < this.price;

@@ -55,7 +55,7 @@ exports.getAllTours = async (req, res) => {
 
 exports.addTour = async (req, res) => {
   try {
-    const newTour = await Tour.create(req.body);
+    const newTour = await Tour.create(req.body); // no validators passed as options, see modify tour, but same can be passed.
     res.status(200).json({
       status: "Success",
       data: newTour,

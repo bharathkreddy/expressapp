@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const qs = require("qs");
+const AppError = require("./utils/appError");
 
 const tourRouter = require("./routers/tourRouter");
 
@@ -20,20 +21,20 @@ app.use("/api/v1/tours", tourRouter);
 
 // ✅ Unhandled Route middleware. (Readme section 7)
 app.all("/{*any}", (req, res, next) => {
-  const err = new Error(`can't find on server - ${req.originalUrl}`);
-  err.statusCode = 404;
-  err.status = "failed";
-  next(err);
+  next(new AppError(`can't find on server - ${req.originalUrl}`, 404));
 });
 
 // ✅ Global Error handler
 app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-  console.log(`🔥 Error ${err.statusCode}: ${err.message}`);
+  console.log(
+    `🔥 Error::@-${err.occueredAt}::Operational-${err.isOperational}::StatusCode-${err.statusCode}::Msg-${err.message}::ErrorStack-\n${err.stack}`
+  );
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
+    time: err.occueredAt,
   });
 });
 

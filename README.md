@@ -70,8 +70,11 @@
       1. install `npm i ndb --global` , ndb package globally.
       2. add a `"debug": "ndb server.js"` in scripts section in `package.json`.
       3. run `npm run debug`.
-   2. Adding a middleware to catch any unhandled route.
+   2. **625666f** Adding a middleware to catch any unhandled route.
       1. Currently if we hit an unhandled route, express returns an html  
          ![WrongRoute](img/wrongRoute.png)
       2. Adding a middleware at the end of app.js. This middleware is reached only if none of above middlewares are hit. There is at least 1 middleware where responce is sent back terminating the req-res cycle. So if this middleware his hit that means - it must have been a route which is not handled.
    3. Global Error handling.
+      1. add a global error handler middleware. This takes 4 params, if we put 4 params on any middleware - express will detect it as global error middleware.
+      2. change wrongroute middleware to generate and error.
+      3. pass error to `next`. If anything is passed into next in any middleware, express will assume its an error and will bypass rest of middlware stack and pass this error to the global error handler.

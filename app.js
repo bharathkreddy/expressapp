@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const qs = require("qs");
 const AppError = require("./utils/appError");
-
+const errorController = require("./controller/errorController");
 const tourRouter = require("./routers/tourRouter");
 
 // ✅ intialize the app
@@ -25,18 +25,7 @@ app.all("/{*any}", (req, res, next) => {
 });
 
 // ✅ Global Error handler
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-  console.log(
-    `🔥 Error::@-${err.occueredAt}::Operational-${err.isOperational}::StatusCode-${err.statusCode}::Msg-${err.message}::ErrorStack-\n${err.stack}`
-  );
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    time: err.occueredAt,
-  });
-});
+app.use(errorController);
 
-// ✅ export the app
+// ✅ export the app`
 module.exports = app;

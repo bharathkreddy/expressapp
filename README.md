@@ -78,5 +78,5 @@
       1. add a global error handler middleware. This takes 4 params, if we put 4 params on any middleware - express will detect it as global error middleware.
       2. change wrongroute middleware to generate and error.
       3. **4e03cff** pass error to `next`. If anything is passed into next in any middleware, express will assume its an error and will bypass rest of middlware stack and pass this error to the global error handler.
-      4. Refactor: Create an appError class in utils folder, we add `Error.captureStackTrace(this, this.constructor)` to preserve the error stack trace.
-      5.
+      4. **1b60399** Refactor: Create an appError class in utils folder, we add `Error.captureStackTrace(this, this.constructor)` to preserve the error stack trace.
+      5. Refactor - moved global error middleware to contollers section as errorController.js

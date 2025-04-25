@@ -2,7 +2,7 @@
 
 ![Architecture](./img/architeture.png)
 
-# 🧪 CHANGE LOG from `e23133e` onwards
+# 🧪 CHANGE LOG from `e23133e` onwards (Using a simple AI tool i have made to generate the below readme from git commit messages.)
 
 1. Commit **945c62e**: Basic Express app with routes setup
    1. Mongoose Model added.
@@ -44,6 +44,7 @@
       1. First add a route to tourRouter.js
       2. Create a middleware to Prefill all the query fields and use this middleware in the router to hit the controller getAllTours.
    8. **6601f03** Aggregates - create a new route, and add aggregate operation.
+   9. REFACTOR: all the sorting, filtering, pagination etc features moved to a class in utils/apiFeatures.js.
 5. **eac90c2** Mongoose middleware : you must add all middleware and plugins `before` calling mongoose.model(). Calling pre() or post() after compiling a model does not work in Mongoose.
    1. Document pre-save hook.
       1. a pre-hook document middleware added, uses slugify package, creates a slug and adds it to the document on every save (`create()` fires `save()` hooks.). This requires we add the `slug` property to the schema.
@@ -79,4 +80,5 @@
       2. change wrongroute middleware to generate and error.
       3. **4e03cff** pass error to `next`. If anything is passed into next in any middleware, express will assume its an error and will bypass rest of middlware stack and pass this error to the global error handler.
       4. **1b60399** Refactor: Create an appError class in utils folder, we add `Error.captureStackTrace(this, this.constructor)` to preserve the error stack trace.
-      5. Refactor - moved global error middleware to contollers section as errorController.js
+      5. **5795fd1** Refactor - moved global error middleware to contollers section as errorController.js
+      6. Catching Errors in Async functions.

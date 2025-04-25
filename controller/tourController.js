@@ -1,47 +1,15 @@
 const Tour = require("./../model/tourModel");
+const APIFeatures = require("./../utils/apiFeatures");
 
 //controllers
 exports.getAllTours = async (req, res) => {
   try {
-    // Building a query
-    const excludedFields = ["page", "sort", "limit", "fields"];
-    const queryObj = { ...req.query }; //we need to make a copy and not modify the original request.
-    excludedFields.forEach((SpecialWord) => delete queryObj[SpecialWord]);
-
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    const mongoQuery = JSON.parse(queryStr);
-    let query = Tour.find(mongoQuery);
-
-    // Sorting
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    }
-
-    // Projecting
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query = query.select("-__v"); //excluding the __v which mongo creates for its internal use.
-    }
-
-    // Pagination
-    const page = req.query.page * 1 || 1; //if no user page then default of 1 page - allways good to limit resuts and prevent an explosion.
-    const limit = req.query.limit * 1 || 100; //multiply by 1 to convert strings to a number.
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
-
-    // only when a page is provided , check if no of skipped records is > total records and throw an erorr.
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments();
-      if (skip >= numTours) throw new Error("🤥 This page does not exist!");
-    }
-
-    // Executing the query
-    const tours = await query; // this now returns the result from .find which returns a query object.
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .project()
+      .paginate()
+      .sort();
+    const tours = await features.query;
 
     res.status(200).json({
       status: "Success",

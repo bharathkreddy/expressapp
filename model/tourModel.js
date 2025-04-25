@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 // mongoose connection
 mongoose.connect(process.env.MONGOURL, {
@@ -90,6 +91,30 @@ const tourSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  slug: {
+    type: String,
+  },
+});
+
+//DOCUMENT MIDDLEWARE - PRE HOOK : runs before .save() and .create()
+// lets craete a slug for each document using this middleware.
+tourSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+//QUERY MIDDLEWARE : fires before find, and filters out all secretTours.
+// istead of find if we want to trigger this on find, findOne, findOneAndDelete etc use a regex `/^find/` i.e. all words starting with find.
+tourSchema.pre("find", function (next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+//AGGREGATION MIDDLEWARE : removes secret tours for aggregates.
+tourSchema.pre("aggregate", function (next) {
+  // console.log(this.pipeline());
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  next();
 });
 
 const Tour = new mongoose.model("Tour", tourSchema);

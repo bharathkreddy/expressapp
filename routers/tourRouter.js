@@ -1,5 +1,5 @@
 // A Router instance is a complete middleware and routing system; for this reason, it is often referred to as a “mini-app”.
-
+const qs = require("qs");
 const express = require("express");
 const router = express.Router();
 
@@ -19,7 +19,7 @@ const requestLog = (req, res, next) => {
     console.log("📦 Request Body:", req.body);
   }
   if (req.query) {
-    console.log("❓ Request Query:", req.query);
+    console.log("❓ Request Query:", qs.parse(req.query));
   }
   next();
 };

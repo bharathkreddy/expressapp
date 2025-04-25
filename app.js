@@ -14,6 +14,9 @@ app.set("query parser", (str) => qs.parse(str));
 
 // ✅ attach middleware
 app.use(morgan("combined"));
+
+// ✅ attach routes
 app.use("/api/v1/tours", tourRouter);
 
+// ✅ export the app
 module.exports = app;

@@ -43,4 +43,22 @@
    7. **9b0860d** Aliasing. Lets say we want to expose a simple easy to remember endpoint for top 5 cheapest tours ranked by rating. for this
       1. First add a route to tourRouter.js
       2. Create a middleware to Prefill all the query fields and use this middleware in the router to hit the controller getAllTours.
-   8. Aggregates - create a new route, and add aggregate operation.
+   8. **6601f03** Aggregates - create a new route, and add aggregate operation.
+5. Mongoose middleware : you must add all middleware and plugins `before` calling mongoose.model(). Calling pre() or post() after compiling a model does not work in Mongoose.
+   1. Document pre-save hook.
+      1. a pre-hook document middleware added, uses slugify package, creates a slug and adds it to the document on every save (`create()` fires `save()` hooks.). This requires we add the `slug` property to the schema.
+      2. These type of Middleware are useful for atomizing model logic. Here are some other ideas:
+         a. complex validation
+         b. removing dependent documents (removing a user removes all their blogposts)
+         c. asynchronous defaults
+         d. asynchronous tasks that a certain action triggers
+      3. `Post` middleware are executed after the hooked method and all of its pre middleware have completed.
+      4. `This` keyword in all document middleware points the `document` i.e the document being updated.
+   2. Query middleware.
+      1. `This` keyword in all query middleware points the curret `Query object`.
+      2. Add `pre-find` hook to trigger a function which filters out all secretTours and passes the result to next function which is getAllTours.
+      3. NOTE: current implementation runs before any `find` but doesnt run on `findOne` or any other type of find. To make the middleware work on all of these simply replace `find` with a regular expression for all words starting with find : `/^find/`.
+   3. Aggregation middleware.
+      1. `This` keyword in all query middleware points the current `Aggregation object`.
+      2. `this.pipeline()` moethod returns the aggregation pipeline.
+      3. If want to remove all secret tours from aggregation - just push one more `match stage` to beginnning of the `this.pipeline()`

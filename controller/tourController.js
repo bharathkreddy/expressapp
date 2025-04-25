@@ -137,12 +137,7 @@ exports.getStats = async (req, res) => {
 
 //this middleware prefills the query with certain objects.
 exports.aliasTopCheap = (req, res, next) => {
-  req.query = {
-    skip: "0",
-    limit: "5",
-    sort: "-ratingsAverage,price",
-    fields: "ratingsAverage,price,name,difficulty,summary",
-  };
-  console.log("🔧 aliasTopCheap middleware called:", req.query);
+  req.url =
+    "/?sort=-ratingsAverage,price&fields=ratingsAverage,price,name,difficulty,summary&limit=5";
   next();
 };

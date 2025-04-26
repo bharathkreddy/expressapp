@@ -23,6 +23,7 @@ exports.signup = catchAsynch(async (req, res) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt,
   });
 
   // generate jwt
@@ -90,3 +91,16 @@ exports.protect = catchAsynch(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
+
+// we need to pass args to the middleware so we create a wrapper which creates a closure.
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // req.user was set set by previous middleware (see above function) and thats how we get access to user.
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new appError("You do not have permissions to this operation.", 403)
+      );
+    }
+    next();
+  };
+};

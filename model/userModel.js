@@ -30,20 +30,26 @@ const userSchema = new mongoose.Schema(
       },
     },
     passwordChangedAt: { type: Date },
+    role: {
+      type: String,
+      enum: ["user", "admin", "guide", "lead-guide"],
+      default: "user",
+    },
   },
   {
     methods: {
       async correctPassword(candidatePassword, userPassword) {
         return await bcrypt.compare(candidatePassword, userPassword);
       },
-      async changedPasswordAfter(JWTimestamp) {
-        if (this.passwordChangedAt) {
-          const changedTimestamp = parseInt(
-            this.passwordChangedAt.getTime() / 1000,
-            10
-          ); //convert to unixtimestamp from current datetimestamp in milsecs
-          return JWTimestamp < changedTimestamp;
-        }
+
+      changedPasswordAfter(JWTimestamp) {
+        if (!this.passwordChangedAt) return false;
+
+        const changedTimestamp = parseInt(
+          this.passwordChangedAt.getTime() / 1000,
+          10
+        );
+        return JWTimestamp < changedTimestamp;
       },
     },
   }

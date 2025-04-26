@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 
 const tourController = require("./../controller/tourController");
+const authController = require("./../controller/authController");
 
 //middleware
 router.use(express.json()); //Parses JSON body in req.body (from the request payload)
@@ -35,8 +36,8 @@ const requestLog = (req, res, next) => {
 
 router
   .route("/")
-  .get(requestLog, tourController.getAllTours)
-  .post(requestLog, tourController.addTour);
+  .get(authController.protect, tourController.getAllTours)
+  .post(authController.protect, tourController.addTour);
 
 router
   .route("/top-5-cheap")
@@ -46,8 +47,8 @@ router.route("/getstats").get(tourController.getStats);
 
 router
   .route("/:id")
-  .get(requestLog, tourController.getTour)
-  .patch(requestLog, tourController.modifyTour)
-  .delete(requestLog, tourController.deleteTour);
+  .get(authController.protect, tourController.getTour)
+  .patch(authController.protect, tourController.modifyTour)
+  .delete(authController.protect, tourController.deleteTour);
 
 module.exports = router;

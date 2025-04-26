@@ -1,5 +1,13 @@
 const AppError = require("../utils/appError");
 
+const handleJWTErrorDB = (err) => {
+  return new AppError("Invalid token. Please login again.", 401);
+};
+
+const handleJWTExpiredErrorDB = (err) => {
+  return new AppError("Expired token. Please login again.", 401);
+};
+
 // we want to turn mongoose error into an operational error
 const handleCastErrorDB = (err) => {
   const message = `CAST ERROR: Invalid ${err.path}: ${err.value}`;
@@ -62,10 +70,14 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    let error = { ...err }; //make a copy of err, so as not to modify original err.
+    //make a copy of err, so as not to modify original err.
+    // also { ...err } wont work as it copies own enumerable properties. It does not copy .name, .message etc. These are non-enumerable or prototype properties in the Error class.
+    let error = Object.create(err);
     if (err.name === "CastError") error = handleCastErrorDB(err); //mongoose generated error when wrong id is provided for finding a tour. run in dev mode to see this on postman
     if (err.code === 11000) error = handleDuplicateKeyErrorDB(err);
     if (err.name === "ValidationError") error = handleValidationErrorDB(err);
+    if (err.name === "JsonWebTokenError") error = handleJWTErrorDB(err);
+    if (err.name === "TokenExpiredError") error = handleJWTExpiredErrorDB(err);
     sendErrorProd(error, res); //send the modified error now. if its not a CastError - it wont be modified.
   }
 };

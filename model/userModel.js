@@ -29,11 +29,21 @@ const userSchema = new mongoose.Schema(
         message: (props) => `${props.value} does not match the password`,
       },
     },
+    passwordChangedAt: { type: Date },
   },
   {
     methods: {
       async correctPassword(candidatePassword, userPassword) {
         return await bcrypt.compare(candidatePassword, userPassword);
+      },
+      async changedPasswordAfter(JWTimestamp) {
+        if (this.passwordChangedAt) {
+          const changedTimestamp = parseInt(
+            this.passwordChangedAt.getTime() / 1000,
+            10
+          ); //convert to unixtimestamp from current datetimestamp in milsecs
+          return JWTimestamp < changedTimestamp;
+        }
       },
     },
   }
@@ -49,6 +59,8 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+// this is another way to create static methods.
 
 // userSchema.methods.correctPassword = async function (
 //   candidatePassword,

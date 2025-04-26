@@ -237,6 +237,9 @@
 
 ### 8.1 Setting up users
 
+- **d24bb8c** Signup endpoint created
+- use `bcryptjs` to salt & hash passwords, this is used in pre-save hook on usermodel. We want the password to first match passwordConfirm done by model validation, then trigger a pre-save middleware to salt and hash the password, replace the password with hash and set the passwordConfirm to undefined.
+
 ---
 
 # ✅ My Notes

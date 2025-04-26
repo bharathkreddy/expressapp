@@ -4,6 +4,7 @@ const qs = require("qs");
 const appError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
 const tourRouter = require("./routers/tourRouter");
+const userRouter = require("./routers/userRouter");
 
 // ✅ intialize the app
 const app = express();
@@ -18,6 +19,7 @@ app.use(morgan("combined"));
 
 // ✅ attach routes
 app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
 
 // ✅ Unhandled Route middleware. (Readme section 7)
 app.all("/{*any}", (req, res, next) => {

@@ -16,7 +16,7 @@
 
 ---
 
-## 2. MVC Architecture Setup
+## 2.🥉 MVC Architecture Setup
 
 ### 2.1 Commit `22ac775`: Routers setup
 
@@ -49,7 +49,7 @@
 
 ---
 
-## 4. Advanced Query Filtering
+## 4. 🗃️ Advanced Query Filtering
 
 ### 4.1 Capturing `req.query` from API `/api/v1/tours?difficulty=easy&duration=5`
 
@@ -116,11 +116,11 @@
 
 ---
 
-## 5. Commit `eac90c2`: Mongoose Middleware
+## 5. 🦔 Commit `eac90c2`: Mongoose Middleware
 
 > you must add all middleware and plugins `before` calling mongoose.model(). Calling pre() or post() after compiling a model does not work in Mongoose.
 
-### 5.1 Document Middleware (pre-save)
+### 📄 5.1 Document Middleware (pre-save)
 
 - a pre-hook document middleware added, uses slugify package, creates a slug and adds it to the document on every save (`create()` fires `save()` hooks.). This requires we add the `slug` property to the schema.
 - `Post` middleware are executed after the hooked method and all of its pre middleware have completed.
@@ -130,13 +130,13 @@
   - Cleaning up dependent documents
   - Async defaults/tasks
 
-### 5.2 Query Middleware
+### ❓ 5.2 Query Middleware
 
 - `this` keyword points to the current Query object.
 - Added pre-find hook to filter out secret tours.
 - NOTE: current implementation runs before any `find` but doesnt run on `findOne` or any other type of find. To make the middleware work on all of these simply replace `find` with a regular expression for all words starting with find : `/^find/`.
 
-### 5.3 Aggregation Middleware
+###🧺 5.3 Aggregation Middleware
 
 - `This` keyword in all query middleware points the current `Aggregation object`.
 - `this.pipeline()` used to manipulate aggregation stages.
@@ -144,14 +144,14 @@
 
 ---
 
-## 6. Commit `9842d31`: Validators
+## 6.👍 Commit `9842d31`: Validators
 
 - Move as much business logic to the Model layer.
 - Used `validator` library for custom validations.
 
 ---
 
-## 7. Error Handling
+## 7.🔥 Error Handling
 
 ### 7.1 Debugging with `ndb`
 
@@ -222,7 +222,7 @@
 - This anonymous function runs the main function and returns a promice and hence we can chain it with `.catch()` and this allows us to get rid of catch block in each controller.
 - Use AppError Util to generage & return custom error message, this will pass the right error status and error message to the error controller.
 
-#### 7.3.4 Commit `` Prod and Dev errors separated.
+#### 7.3.4 Commit `814d5fb` Prod and Dev errors separated, Uncaught exceptions and Unhandled rejections.
 
 - In error controller split out separate functions for dev and prod errors, have different start scripts for dev and prod.
 - Split out operational and programming errors.
@@ -233,8 +233,12 @@
 - For these type of errors can make the state of node inconsistent and hence we should shutdown the application. So we crash the app after logging.
 - Uncaught Exceptions - bugs in code or synchronous functions. I use `process.on('uncaughtException', errorcallback)`
 
+## 8. 🕵 AuthN and AuthZ
+
+### 8.1 Setting up users
+
 ---
 
-# ✅ Final Note
+# ✅ My Notes
 
-- Note to myself: come back to this later
+- Notes to myself: come back to this later

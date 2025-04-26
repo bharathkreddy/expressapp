@@ -195,7 +195,7 @@
 
 - Moved global error handler into `controllers/errorController.js`.
 
-#### 7.3.4 Handling Errors in Async Functions
+#### 7.3.4 Commit `db46d36` Handling Errors in Async Functions
 
 - Controllers now use `try...catch`.
 - Forward errors using `next(err)` to the global error middleware.
@@ -221,6 +221,17 @@
 - we wrap this inside `catchAsynch` function which returns an anonymous function which will be assigned to each controller _(ex: addTour, getAllTours etc.)_
 - This anonymous function runs the main function and returns a promice and hence we can chain it with `.catch()` and this allows us to get rid of catch block in each controller.
 - Use AppError Util to generage & return custom error message, this will pass the right error status and error message to the error controller.
+
+#### 7.3.4 Commit `` Prod and Dev errors separated.
+
+- In error controller split out separate functions for dev and prod errors, have different start scripts for dev and prod.
+- Split out operational and programming errors.
+- Mongoose generates errors where i am not managing the error, so these are **NOT** marked with `err.isOperational` tag. Checking these error messages they are broadly three types. Handle them in the function split above.
+- Broad 3 types of mongoose errors are all handled now.
+- Errors - `Unhandled rejections` : we can test it by changing mongo key to mimic mongo down. This leads to app crashing
+  ![appCrash](img/appCarsh.png)
+- For these type of errors can make the state of node inconsistent and hence we should shutdown the application. So we crash the app after logging.
+- Uncaught Exceptions - bugs in code or synchronous functions. I use `process.on('uncaughtException', errorcallback)`
 
 ---
 

@@ -10,6 +10,7 @@ router.use(express.json()); //Parses JSON body in req.body (from the request pay
 
 // middleware that is specific to this router
 const requestLog = (req, res, next) => {
+  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
   console.log("🔸 Request Method:", req.method);
   console.log("🔹 Request URL:", req.originalUrl);
   if (Object.keys(req.params).length > 0) {
@@ -21,6 +22,7 @@ const requestLog = (req, res, next) => {
   if (req.query) {
     console.log("❓ Request Query:", qs.parse(req.query));
   }
+  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
   next();
 };
 

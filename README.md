@@ -239,7 +239,8 @@
 
 - **d24bb8c** Signup endpoint created
 - **2bae79c** use `bcryptjs` to salt & hash passwords, this is used in pre-save hook on usermodel. We want the password to first match passwordConfirm done by model validation, then trigger a pre-save middleware to salt and hash the password, replace the password with hash and set the passwordConfirm to undefined.
-- Create JWT as soon as user is Authenticated and passback to client. I use `jsonwebtoken` package for this.
+- **c9a220d** Create JWT as soon as user is Authenticated and passback to client. I use `jsonwebtoken` package for this.
+- Login users based on userid and email. For this we have to first check if password matches, we create an instance method on userSchema so it is available as method on all documents/ users (users/documents are instantiations of model). Bad email id, username or missing either of them now marked as operational error.
 
 ---
 

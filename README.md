@@ -242,7 +242,7 @@
 - **c9a220d** Create JWT as soon as user is Authenticated and passback to client. I use `jsonwebtoken` package for this.
 - **753712b** Login users based on userid and email. For this we have to first check if password matches, we create an instance method on userSchema so it is available as method on all documents/ users (users/documents are instantiations of model). Bad email id, username or missing either of them now marked as operational error.
   - **29522fb** using jwt to protect routes. I will protect all tour routes by adding a middleware in tour routes to check if user is authenticated or not. The middleware would stay in authmodule and exported to userRouter. We handle incorrect token and expired tokens as well. This was simulated by changing token `JWT_EXPIRES_IN` to 5000 (this is in mills)
-  - Restricting Authorization to delete users only to Admin. Add a middleware `after` authentication middleware to check this. We need to pass some args `roles` to this middleware so we create a closure, we get previous middleware to attach the user to the request and we get user role via that in this middlware. We use this to check for right roles to allow access.
+  - **2ce8dc5** Restricting Authorization to delete users only to Admin. Add a middleware `after` authentication middleware to check this. We need to pass some args `roles` to this middleware so we create a closure, we get previous middleware to attach the user to the request and we get user role via that in this middlware. We use this to check for right roles to allow access.
 
 ---
 

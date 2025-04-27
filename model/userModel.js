@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin", "guide", "lead-guide"],
       default: "user",
+      required: true,
     },
   },
   {

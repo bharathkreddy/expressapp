@@ -33,6 +33,9 @@ const createSendToken = (user, statusCode, res) => {
 
   res.cookie("jwt", token, cookieOptions);
 
+  //remove password from user, prevents password from db being displayed as responce
+  user.password = undefined;
+
   res.status(statusCode).json({ status: "success", token: token, data: user });
 };
 

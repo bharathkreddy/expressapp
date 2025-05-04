@@ -281,7 +281,14 @@
   ### 8.4 Sending JWT via Cookie.
 
   - **a2aa045** First refactor and move all signing and sending tokens to a single function in `authController.js` file.
-  - Send cookie instead of JWT. cookie is just a text string.
+  - **939413d** Send cookie instead of JWT. cookie is just a text string.
+
+  ### 8.5 Ratelimiting
+
+  - Usecase: To prevent too many requests from same API.
+  - I used a global middleware in `app.js` using `express-rate-limit`
+
+  ### 8.6 Helmet
 
 ---
 

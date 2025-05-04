@@ -1,7 +1,16 @@
 const User = require("./../model/userModel");
 const APIFeatures = require("./../utils/apiFeatures");
+const AppError = require("./../utils/appError");
 const appError = require("./../utils/appError");
 const jwt = require("jsonwebtoken");
+
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 
 const catchAsynch = (fn) => {
   return (req, res, next) => {
@@ -65,4 +74,32 @@ exports.modifyUser = catchAsynch(async (req, res, next) => {
     status: "Success",
     data: user,
   });
+});
+
+exports.updateMe = catchAsynch(async (req, res, next) => {
+  // 1) Check if update is for password or this is new document creation.
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new appError(
+        "This route is not for password updates, Please use /resetPassword",
+        400
+      )
+    );
+  }
+
+  // 2) Filter out unwanted field names that are not allowed to be updated
+  const filteredBody = filterObj(req.body, "name", "email");
+
+  // 3) Update user document
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({ status: "success", data: { user: updatedUser } });
+});
+
+exports.deleteMe = catchAsynch(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({ status: "success", data: null });
 });

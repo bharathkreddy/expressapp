@@ -259,16 +259,66 @@
     2. we fetch the user based on token from req body by hashing the token and matching it to tokens on users.
     3. if user found, change passwords, remove the reset token and expiry for the user.
     4. We let all validations kick in after we save the user with changed data.
-  - \*\* \*\* Update password:
+  - **fc15882** Update password:
     1. Endpoint: `/api/v1/users/updatePassword` user must allready be logged in, i.e. with the JWT valid.
     2. The middleware protecting this route , takes JWT, decodes and gets ID and validates. Adds user object to the request body.
     3. If valid user, pass on to next middleware which fetches user and adds password field to selection by looking up users with ID.
     4. From request body check if user current password matches actual password. We must do this check to factor in for cases where user might have left their device logged in and a malicious actor can change their password on this route without any credentials.
     5. If check passes, change the password, and save the user object, this kicks in all the validators like password confirm etc.
     6. Return the new JWT (client app can choose to take this and log the user in with new JWT).
+  - **abc** UpdateMe
+    1. Endpoint: `/api/v1/users/updateMe`. Take id from JWT of current user (since it is protected route, the protect middleware adds user to req body)
+    2. created a sanitized object by filtering out req.body with field we want to allow updates on.
+    3. FindbyIDAndUpdate method to update the user.
+  - DeleteMe
+    1. Endpoint: `/api/v1/users/deleteMe`. Take id from JWT of current user,
+    2. Mark the `active` property of user as false.
+    3. Update rest of the routes to show only active users
+    - Add a `pre - find` middleware to run before every find. We actualy use regex to trigger this before any command that starts with find. `/^find/`.
+    - The `this` object in this middleware points to object where it was called and hence would be the user instance.
+    - filter out `active: false`
 
 ---
 
 # ✅ My Notes
 
-- Notes to myself: come back to this later
+### Compromised DB
+
+- salt and hash passwords before they are stored.
+- Strongly encrypt password reset tokens (SHA 256 at min)
+
+### Brute Force Attacks
+
+- bcrypt slows downs rate at which it can compare hashes but otherise Allwayse implement a rate limiter.
+- Implement max login attempts.
+
+### XSS - Cross-side scripting attacks
+
+- Store JWT in HTTPOnly cookies.
+- Sanitie user input data allways.
+- Set Special HTTP headers (helmet-package)
+
+### DOS attacks
+
+- Rate limiting (express-rate-limit).
+- Limit body payload(in body-parser), where possible reconstruct req body into a sanitized body - do not blindly pass req.body to functions.
+- Avoid evil regex in code, these type of regex are expensive and repeated inputs to these can choke the system.
+
+### Query Injection
+
+- Use a defined schema type.
+- Sanitize user input data.
+
+### Others
+
+- Allways use HTTPS
+- Reset tokens should be with expiry dates.
+- Deny access to JWT after password change.
+- Be care of what error details are passed to client. Classify errors into operational and non-ops errors.
+- Cross site request forgery (CSRF) - use csurf package.
+- Require re-auth after high value action.
+- Implement blacklist of un-trusted JWTs.
+- Confirm email account after first account creation.
+- Keep user logged in with refresh tokens.
+- Implement 2-factor authentication.
+- Prevent parameter pollution causing uncaught Exceptions.

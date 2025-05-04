@@ -292,7 +292,7 @@
 
   - **19aa1dd** Collection of many middlewares, all for security. These add various things to headers to allow safe things on the website.
 
-  ### 8.7 Data sanitization against NOSQL query injections.
+  ### 8.7 **bdd1a1e** Data sanitization against NOSQL query injections.
 
   - very important, below is a simulation of how this happens.
   - we take a popular password and the email allways will evaluate to true, so for this popular password, mongo will return the first match!.
@@ -309,7 +309,9 @@
   - after using `express-mongo-sanitize`
     ![sanitize](img/sanitize.png)
 
-  ### 8.8
+  ### 8.8 XSS attack protection
+
+  - i used `express-xss-sanitize` package for this. Now i can push `<script>do-evil-things<script>`
 
 ---
 

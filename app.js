@@ -4,6 +4,7 @@ const qs = require("qs");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
+const { xss } = require("express-xss-sanitizer");
 
 const appError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
@@ -44,7 +45,10 @@ app.use(express.json({ limit: "10kb" }));
 app.use(express.static(`${__dirname}/public`));
 
 // 6) sanitize against nosql injections
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
+
+// 7) XSS attacks
+// app.use(xss());
 
 // ✅ ATTACH ROUTES
 app.use("/api/v1/tours", tourRouter);

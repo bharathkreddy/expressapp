@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("node:crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -36,6 +37,8 @@ const userSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
     methods: {
@@ -52,6 +55,16 @@ const userSchema = new mongoose.Schema(
         );
         return JWTimestamp < changedTimestamp;
       },
+
+      createPasswordResetToken() {
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        this.passwordResetToken = crypto
+          .createHash("sha256")
+          .update(resetToken)
+          .digest("hex");
+        this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 mins in milliseconds
+        return resetToken;
+      },
     },
   }
 );
@@ -61,6 +74,9 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const saltingRounds = 10;
   this.password = await bcrypt.hash(this.password, saltingRounds);
+
+  //update the passworedChangedAt property to now.
+  this.passwordChangedAt = Date.now();
 
   // delete passwordConfirm field - as we dont need this beyond just ensuring is user has typed the password correctly
   this.passwordConfirm = undefined;

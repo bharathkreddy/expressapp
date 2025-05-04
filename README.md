@@ -240,9 +240,26 @@
 - **d24bb8c** Signup endpoint created
 - **2bae79c** use `bcryptjs` to salt & hash passwords, this is used in pre-save hook on usermodel. We want the password to first match passwordConfirm done by model validation, then trigger a pre-save middleware to salt and hash the password, replace the password with hash and set the passwordConfirm to undefined.
 - **c9a220d** Create JWT as soon as user is Authenticated and passback to client. I use `jsonwebtoken` package for this.
+
+### 8.2 Protecting endpoints/routes
+
 - **753712b** Login users based on userid and email. For this we have to first check if password matches, we create an instance method on userSchema so it is available as method on all documents/ users (users/documents are instantiations of model). Bad email id, username or missing either of them now marked as operational error.
+
   - **29522fb** using jwt to protect routes. I will protect all tour routes by adding a middleware in tour routes to check if user is authenticated or not. The middleware would stay in authmodule and exported to userRouter. We handle incorrect token and expired tokens as well. This was simulated by changing token `JWT_EXPIRES_IN` to 5000 (this is in mills)
   - **2ce8dc5** Restricting Authorization to delete users only to Admin. Add a middleware `after` authentication middleware to check this. We need to pass some args `roles` to this middleware so we create a closure, we get previous middleware to attach the user to the request and we get user role via that in this middlware. We use this to check for right roles to allow access.
+
+  ### 8.3 Password reset and change
+
+  - \*\* \*\* Forget password feature: User can hit the `/api/v1/users/forgotPassword` route with email in request body,
+    1. auth module fetches the user based on email
+    2. If user is found, create a simple token, move hash of the token & some expiry time to usermodel
+    3. email the token to user.
+  - \*\* \*\* Reset password using token
+    1. From email get the token and hit the `/resetPassword/:token` endpoint with password and passwordConfirm in body.
+    2. we fetch the user based on token from req body by hashing the token and matching it to tokens on users.
+    3. if user found, change passwords, remove the reset token and expiry for the user.
+    4. We let all validations kick in after we save the user with changed data.
+  - \*\* \*\* Change password:
 
 ---
 

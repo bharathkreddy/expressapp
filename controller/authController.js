@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/userModel");
 const appError = require("./../utils/appError");
 const { receiveMessageOnPort } = require("worker_threads");
+const sendEmail = require("../utils/email");
+const crypto = require("node:crypto");
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -104,3 +106,89 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = catchAsynch(async (req, res, next) => {
+  // 1) find the user
+  const user = await User.findOne(req.body).exec();
+
+  if (!user) {
+    return next(new appError("Email Id does not exists", 403));
+  }
+
+  // 2) create a reset token for the user
+  const resetToken = user.createPasswordResetToken();
+
+  await user.save({ validateBeforeSave: false }); // we are saving the document but do not want to provide all mandatory fields, so de-activate all mandatory fields.
+
+  // 3) send email to the user with reset token
+  const resetURL = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/users/resetPassword/${resetToken}`;
+
+  const transporter = sendEmail(resetURL);
+
+  // we want to do more than just passing the error to global error middleware
+  try {
+    await transporter.sendMail({
+      from: '"quentin borer 👻" <quentin.borer@ethereal.email>', // sender address
+      to: `${req.body.email}`, // list of receivers
+      subject: "Password reset request.", // Subject line
+      text: `Please change your password before - ${user.passwordResetExpires}`, // plain text body
+      html: `<p>Please change your password before - ${user.passwordResetExpires}</p><b>ResetURL: ${resetURL}</b>`, // html body
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Please check your email for password reset link.",
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new appError(
+        "There was an error sending email. Please try again in a few..",
+        500
+      )
+    );
+  }
+});
+
+exports.resetPassword = catchAsynch(async (req, res, next) => {
+  // 1) fetch the user based on token only - since this is a link based request and user wont send email as body/payload to this endpoint
+
+  const token_hash = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: token_hash,
+    passwordResetExpires: { $gte: Date.now() },
+  }).exec();
+
+  // 2) If reset-token matches & is not expired - change the password
+  if (!user) {
+    return next(
+      new appError("Token Expired, please reset the password again.", 400)
+    );
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  // save not update because we want all validators to kick in - Here is where password = passwordConfirm validation will kick in so not required to do it here.
+  await user.save();
+
+  // 3) update the passwordChangedAt property for the user
+
+  // 4) Log the user in by sending the JWT
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: "success",
+    token: token,
+  });
+});

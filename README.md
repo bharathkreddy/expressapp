@@ -250,16 +250,22 @@
 
   ### 8.3 Password reset and change
 
-  - \*\* \*\* Forget password feature: User can hit the `/api/v1/users/forgotPassword` route with email in request body,
+  - **d4f8eb2** Forget password feature: User can hit the `/api/v1/users/forgotPassword` route with email in request body,
     1. auth module fetches the user based on email
     2. If user is found, create a simple token, move hash of the token & some expiry time to usermodel
     3. email the token to user.
-  - \*\* \*\* Reset password using token
+  - **d4f8eb2** Reset password using token
     1. From email get the token and hit the `/resetPassword/:token` endpoint with password and passwordConfirm in body.
     2. we fetch the user based on token from req body by hashing the token and matching it to tokens on users.
     3. if user found, change passwords, remove the reset token and expiry for the user.
     4. We let all validations kick in after we save the user with changed data.
-  - \*\* \*\* Change password:
+  - \*\* \*\* Update password:
+    1. Endpoint: `/api/v1/users/updatePassword` user must allready be logged in, i.e. with the JWT valid.
+    2. The middleware protecting this route , takes JWT, decodes and gets ID and validates. Adds user object to the request body.
+    3. If valid user, pass on to next middleware which fetches user and adds password field to selection by looking up users with ID.
+    4. From request body check if user current password matches actual password. We must do this check to factor in for cases where user might have left their device logged in and a malicious actor can change their password on this route without any credentials.
+    5. If check passes, change the password, and save the user object, this kicks in all the validators like password confirm etc.
+    6. Return the new JWT (client app can choose to take this and log the user in with new JWT).
 
 ---
 

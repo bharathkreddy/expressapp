@@ -192,3 +192,33 @@ exports.resetPassword = catchAsynch(async (req, res, next) => {
     token: token,
   });
 });
+
+exports.updatePassword = catchAsynch(async (req, res, next) => {
+  // 1) Get the user from collection. req.user comes from the middleware protecting this route.
+  const user = await User.findById(req.user._id).select("+password");
+
+  // 2) Check if existing password for the logged in user is correct - we cant let without this check, in case of user leaving their device logged in.
+  if (
+    !(await req.user.correctPassword(req.body.currentPassword, user.password))
+  ) {
+    return next(
+      new appError(
+        "Password incorrect, please provide the correct password.",
+        401
+      )
+    );
+  }
+
+  // 3) change the password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save(); // this allows validation to kickin.
+
+  // 4) log in the user with new JWT
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: "Success",
+    token: token,
+  });
+});

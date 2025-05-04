@@ -1,6 +1,7 @@
 const User = require("./../model/userModel");
 const APIFeatures = require("./../utils/apiFeatures");
 const appError = require("./../utils/appError");
+const jwt = require("jsonwebtoken");
 
 const catchAsynch = (fn) => {
   return (req, res, next) => {

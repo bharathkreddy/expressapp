@@ -285,10 +285,12 @@
 
   ### 8.5 Ratelimiting
 
-  - Usecase: To prevent too many requests from same API.
+  - **625e312** Usecase: To prevent too many requests from same API.
   - I used a global middleware in `app.js` using `express-rate-limit`
 
   ### 8.6 Helmet
+
+  - Collection of many middlewares, all for security. These add various things to headers to allow safe things on the website.
 
 ---
 

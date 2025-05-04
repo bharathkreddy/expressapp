@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const qs = require("qs");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 const appError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
@@ -16,9 +17,15 @@ const app = express();
 // which doesn't handle bracket notation or nested keys.
 app.set("query parser", (str) => qs.parse(str));
 
-// ✅ attach middleware
+// ✅ ATTACH MIDDLEWARE
+
+// 1) set security HTTP headers
+app.use(helmet());
+
+// 2) logging
 app.use(morgan("combined"));
 
+// 3) Rate limiter
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -29,7 +36,13 @@ const limiter = rateLimit({
 
 app.use("/api", limiter);
 
-// ✅ attach routes
+// 4) Body parser
+app.use(express.json({ limit: "10kb" }));
+
+// 5) serving static files
+app.use(express.static(`${__dirname}/public`));
+
+// ✅ ATTACH ROUTES
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 

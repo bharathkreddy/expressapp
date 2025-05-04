@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const qs = require("qs");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const appError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
@@ -41,6 +42,9 @@ app.use(express.json({ limit: "10kb" }));
 
 // 5) serving static files
 app.use(express.static(`${__dirname}/public`));
+
+// 6) sanitize against nosql injections
+app.use(mongoSanitize());
 
 // ✅ ATTACH ROUTES
 app.use("/api/v1/tours", tourRouter);

@@ -233,7 +233,7 @@
 - For these type of errors can make the state of node inconsistent and hence we should shutdown the application. So we crash the app after logging.
 - Uncaught Exceptions - bugs in code or synchronous functions. I use `process.on('uncaughtException', errorcallback)`
 
-## 8. 🕵 AuthN and AuthZ
+## 8. 🕵 AuthN, AuthZ and Security
 
 ### 8.1 Setting up users
 
@@ -290,7 +290,26 @@
 
   ### 8.6 Helmet
 
-  - Collection of many middlewares, all for security. These add various things to headers to allow safe things on the website.
+  - **19aa1dd** Collection of many middlewares, all for security. These add various things to headers to allow safe things on the website.
+
+  ### 8.7 Data sanitization against NOSQL query injections.
+
+  - very important, below is a simulation of how this happens.
+  - we take a popular password and the email allways will evaluate to true, so for this popular password, mongo will return the first match!.
+
+    ```js
+    {
+      "email": { "$gte": "" },
+      "password": "pass1234"
+    }
+    ```
+
+    ![InjectionAttack](img/injectionAttack.png)
+
+  - after using `express-mongo-sanitize`
+    ![sanitize](img/sanitize.png)
+
+  ### 8.8
 
 ---
 

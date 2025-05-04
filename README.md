@@ -280,8 +280,8 @@
 
   ### 8.4 Sending JWT via Cookie.
 
-  - First refactor and move all signing and sending tokens to a single function in `authController.js` file.
-  -
+  - **a2aa045** First refactor and move all signing and sending tokens to a single function in `authController.js` file.
+  - Send cookie instead of JWT. cookie is just a text string.
 
 ---
 

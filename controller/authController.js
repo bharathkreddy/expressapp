@@ -18,6 +18,11 @@ const catchAsynch = (fn) => {
   };
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  res.status(statusCode).json({ status: "success", token: token, data: user });
+};
+
 exports.signup = catchAsynch(async (req, res) => {
   // const newUser = await User.create(req.body); We dont do this because user can add arbitary keys in body which we dont want.
   const newUser = await User.create({
@@ -28,9 +33,8 @@ exports.signup = catchAsynch(async (req, res) => {
     passwordChangedAt: req.body.passwordChangedAt,
   });
 
-  // generate jwt
-  const token = signToken(newUser._id);
-  res.status(201).json({ status: "success", token: token, data: newUser });
+  // generate jwt & send
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsynch(async (req, res, next) => {
@@ -53,8 +57,7 @@ exports.login = catchAsynch(async (req, res, next) => {
     return next(new appError("Please provide correct email and Password", 401));
   }
   // 3) if all ok, send jwt token to client.
-  const token = signToken(user._id);
-  res.status(201).json({ status: "success", token: token });
+  createSendToken(user, 201, res);
 });
 
 exports.protect = catchAsynch(async (req, res, next) => {
@@ -185,12 +188,7 @@ exports.resetPassword = catchAsynch(async (req, res, next) => {
   // 3) update the passwordChangedAt property for the user
 
   // 4) Log the user in by sending the JWT
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: "success",
-    token: token,
-  });
+  createSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsynch(async (req, res, next) => {
@@ -215,10 +213,5 @@ exports.updatePassword = catchAsynch(async (req, res, next) => {
   await user.save(); // this allows validation to kickin.
 
   // 4) log in the user with new JWT
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: "Success",
-    token: token,
-  });
+  createSendToken(user, 200, res);
 });
